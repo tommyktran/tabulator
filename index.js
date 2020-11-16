@@ -73,7 +73,11 @@ function convertCSVtoVotes(csvFile) {
             voteArray[x] = voteArray[x].split(',');
             console.log(voteArray[x]);
             for (y in voteArray[x]) {
+                if (voteArray[x][y].includes("\r")) {
+                    voteArray[x][y] = voteArray[x][y].replace(/\r\n|\n|\r/, '');
+                }
                 if (voteArray[x][y][0] == '"') {
+                    console.log(voteArray[x][y])
                     voteArray[x][y] = voteArray[x][y].split('');
                     voteArray[x][y].shift();
                     voteArray[x][y].pop();
