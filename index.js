@@ -49,26 +49,53 @@ function readCSV(csvFile) {
       }
 }
 function convertCSVtoVotes(csvFile) {
+
     let voteArray = readCSV(csvFile);
+    console.log(voteArray);
     for (x in voteArray) {
-        voteArray[x] = voteArray[x].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-        voteArray[x].shift();
-        voteArray[x].shift();
-        for (y in voteArray[x]) {
-            voteArray[x][y] = voteArray[x][y].replace("\r", '');
-            voteArray[x][y] = voteArray[x][y].replace('"', '');
-            voteArray[x][y] = voteArray[x][y].replace('"', '')
+        if (!(voteArray[x].includes('"'))) {
+            voteArray[x] = voteArray[x].split(",");
+        } else {
+            let foundEndQuote = true;
+            voteArray[x] = voteArray[x].split('');
+            for (let i = 0; i < voteArray[x].length; i++) {
+                if (voteArray[x][i] == '"' && foundEndQuote == true) {
+                    foundEndQuote = false;
+                } else if (voteArray[x][i] == '"' && voteArray[x][i+1] == '"') {
+                    i++;
+                } else if (voteArray[x][i] == "," && foundEndQuote == false) {
+                    voteArray[x][i] = "@";
+                } else if (voteArray[x][i] == '"' && foundEndQuote == false) {
+                    foundEndQuote = true;
+                } 
+            }
+            voteArray[x] = voteArray[x].join('');
+            voteArray[x] = voteArray[x].split(',');
+            console.log(voteArray[x]);
+            for (y in voteArray[x]) {
+                if (voteArray[x][y][0] == '"') {
+                    voteArray[x][y] = voteArray[x][y].split('');
+                    voteArray[x][y].shift();
+                    voteArray[x][y].pop();
+                    voteArray[x][y] = voteArray[x][y].join('');
+                }
+                voteArray[x][y] = voteArray[x][y].replace("@",",");       
+                while (voteArray[x][y].indexOf('""') !== -1) {
+                    voteArray[x][y] = voteArray[x][y].replace('""','"');
+                }                
+            }
         }
     }
+    console.log(voteArray);
     return voteArray;
 }
 
 CSV = convertCSVtoVotes("Mayor.csv");
 
-const a = new Vote(CSV[0]);
-console.log(a.list);
-a.eliminate("Miley Houston");
-console.log(a.list);
-console.log(a.firstChoice());
-console.log(a.isExhausted());
-a.display();
+// const a = new Vote(CSV[0]);
+// console.log(a.list);
+// a.eliminate("Miley Houston");
+// console.log(a.list);
+// console.log(a.firstChoice());
+// console.log(a.isExhausted());
+// a.display();
