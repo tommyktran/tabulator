@@ -51,7 +51,6 @@ function readCSV(csvFile) {
 function convertCSVtoVotes(csvFile) {
 
     let voteArray = readCSV(csvFile);
-    console.log(voteArray);
     for (x in voteArray) {
         if (!(voteArray[x].includes('"'))) {
             voteArray[x] = voteArray[x].split(",");
@@ -102,7 +101,7 @@ CSV = convertCSVtoVotes("Mayor.csv");
 
 // const a = new Vote(CSV[0]);
 // console.log(a.list);
-// a.eliminate("Miley Houston");
+// a.eliminate("Mike Jones");
 // console.log(a.list);
 // console.log(a.firstChoice());
 // console.log(a.isExhausted());
