@@ -79,12 +79,16 @@ function convertCSVtoVotes(csvFile) {
                     voteArray[x][y].pop();
                     voteArray[x][y] = voteArray[x][y].join('');
                 }
-                voteArray[x][y] = voteArray[x][y].replace("@",",");       
+                while (voteArray[x][y].indexOf('@') !== -1) {
+                    voteArray[x][y] = voteArray[x][y].replace("@",",");
+                }       
                 while (voteArray[x][y].indexOf('""') !== -1) {
                     voteArray[x][y] = voteArray[x][y].replace('""','"');
                 }                
             }
         }
+        voteArray[x].shift();
+        voteArray[x].shift();
     }
     console.log(voteArray);
     return voteArray;
