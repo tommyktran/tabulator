@@ -1,7 +1,7 @@
 let nameSeparator = "]";
 let CSV = "";
 
-const fs = require('fs')
+const fs = require('fs');
 
 class Vote {
     constructor(voteArray) {
