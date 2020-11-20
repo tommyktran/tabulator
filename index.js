@@ -57,6 +57,9 @@ function convertCSVtoVotes(csvFile) {
         let storedWord = "";
         let state = "START";
         for (let y = 0; y < voteArray[x].length; y++) {
+            if (voteArray[x][y].includes("\r")) {
+                voteArray[x][y] = voteArray[x][y].replace(/\r\n|\n|\r/, '');
+            }
             if (state == "START") {
                 if (voteArray[x][y] == '"') {
                     state = "INSIDE_QUOTE";
@@ -88,6 +91,11 @@ function convertCSVtoVotes(csvFile) {
                     storedWord = "";
                     state = "START";
                     y++;
+                } else if (y == voteArray[x].length-1) {
+                    storedWord += voteArray[x][y];
+                    storedArray.push(storedWord);
+                    storedWord = "";
+                    state = "START";
                 } else {
                     storedWord += voteArray[x][y];
                 }
@@ -145,10 +153,6 @@ function convertCSVtoVotes(csvFile) {
 
 CSV = convertCSVtoVotes("Mayor.csv");
 
-// const a = new Vote(CSV[0]);
-// console.log(a.list);
-// a.eliminate("Mike Jones");
-// console.log(a.list);
-// console.log(a.firstChoice());
-// console.log(a.isExhausted());
-// a.display();
+const a = new Vote(CSV[17]);
+a.eliminate('Kevin "Khanh" Le, Sr.');
+a.display();
