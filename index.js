@@ -69,6 +69,18 @@ class VoteRound {
         this.pastRound = this.round;
         this.round = array;
     }
+
+    findEliminate() {
+        let arr = Object.values(this.round);
+        let min = Math.min(...arr);
+        let result = [];
+        for (x in this.round) {
+            if (this.round[x] === min) {
+                result.push(x)
+            }
+        }
+        return result;
+    }
 }
 
 class VoteList {
@@ -200,3 +212,5 @@ const voteRound = new VoteRound(votelist.countVotes());
 console.log(voteRound.round);
 console.log(voteRound.getLeadCandidate());
 voteRound.findWinner();
+
+console.log(voteRound.findEliminate());
