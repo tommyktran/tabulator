@@ -9,7 +9,6 @@ class Vote {
     }
 
     eliminate(name) {
-        console.log("Eliminating " + name);
         for (let x = 0; x < this.list.length; x++) {
             if (this.list[x] == name) {
                 this.list.splice(x, 1);
@@ -38,6 +37,79 @@ class Vote {
         console.log(this.list);
     }
 }
+class VoteRound {
+    constructor(countObj) {
+        this.round = countObj;
+        this.pastRound = {};
+    }
+
+    findWinner() {
+        if (typeof this.getLeadCandidate() == "string") {
+            console.log("The winner is " + this.getLeadCandidate());
+        }
+    }
+
+    getLeadCandidate() {
+        let arr = Object.values(this.round);
+        let max = Math.max(...arr);
+        let result = [];
+        for (x in this.round) {
+            if (this.round[x] === max) {
+                result.push(x)
+            }
+        }
+        if (result.length == 1) {
+            return result[0];
+        } else {
+            return result;
+        }
+    }
+
+    newRound(array) {
+        this.pastRound = this.round;
+        this.round = array;
+    }
+}
+
+class VoteList {
+    constructor() {
+        this.list = [];
+    }
+
+    eliminate(name) {
+        for (x of this.list) {
+            x.eliminate(name);
+        }
+    }
+    display() {
+        console.log(this.list);
+    }
+    countVotes() {
+        let countObj = {};
+        let nameFound = false;
+        for (x in this.list) {
+            nameFound = false;
+            if (countObj.size != 0) {
+                for (let y in countObj) {
+                    if (y === this.list[x].firstChoice()) {
+                        nameFound = true;
+                    }
+                }
+            }
+
+            if (!(this.list[x].isExhausted())) {
+                if (nameFound == false) {
+                    countObj[this.list[x].firstChoice()] = 1;
+                } else {
+                    countObj[this.list[x].firstChoice()] += 1;
+                }
+            }
+            
+        }
+        return countObj;
+    }
+}
+
 function readCSV(csvFile) {
     try {
         const data = fs.readFileSync(csvFile, 'utf8')
@@ -105,54 +177,26 @@ function convertCSVtoVotes(csvFile) {
         voteArray[x].shift();
         voteArray[x].shift();
     }
-    // for (x in voteArray) {
-    //     if (!(voteArray[x].includes('"'))) {
-    //         voteArray[x] = voteArray[x].split(",");
-    //     } else {
-    //         let foundEndQuote = true;
-    //         voteArray[x] = voteArray[x].split('');
-    //         for (let i = 0; i < voteArray[x].length; i++) {
-    //             if (voteArray[x][i] == '"' && foundEndQuote == true) {
-    //                 foundEndQuote = false;
-    //             } else if (voteArray[x][i] == '"' && voteArray[x][i+1] == '"') {
-    //                 i++;
-    //             } else if (voteArray[x][i] == "," && foundEndQuote == false) {
-    //                 voteArray[x][i] = "@";
-    //             } else if (voteArray[x][i] == '"' && foundEndQuote == false) {
-    //                 foundEndQuote = true;
-    //             } 
-    //         }
-    //         voteArray[x] = voteArray[x].join('');
-    //         voteArray[x] = voteArray[x].split(',');
-    //         console.log(voteArray[x]);
-    //         for (y in voteArray[x]) {
-    //             if (voteArray[x][y].includes("\r")) {
-    //                 voteArray[x][y] = voteArray[x][y].replace(/\r\n|\n|\r/, '');
-    //             }
-    //             if (voteArray[x][y][0] == '"') {
-    //                 console.log(voteArray[x][y])
-    //                 voteArray[x][y] = voteArray[x][y].split('');
-    //                 voteArray[x][y].shift();
-    //                 voteArray[x][y].pop();
-    //                 voteArray[x][y] = voteArray[x][y].join('');
-    //             }
-    //             while (voteArray[x][y].indexOf('@') !== -1) {
-    //                 voteArray[x][y] = voteArray[x][y].replace("@",",");
-    //             }       
-    //             while (voteArray[x][y].indexOf('""') !== -1) {
-    //                 voteArray[x][y] = voteArray[x][y].replace('""','"');
-    //             }                
-    //         }
-    //     }
-    //     voteArray[x].shift();
-    //     voteArray[x].shift();
-    // }
-    console.log(voteArray);
     return voteArray;
 }
 
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
 CSV = convertCSVtoVotes("Mayor.csv");
 
-const a = new Vote(CSV[17]);
-a.eliminate('Kevin "Khanh" Le, Sr.');
-a.display();
+const votelist = new VoteList();
+for (x in CSV) {
+    votelist.list[x] = new Vote(CSV[x]);
+}
+console.log(votelist.countVotes());
+const voteRound = new VoteRound(votelist.countVotes());
+
+console.log(voteRound.round);
+console.log(voteRound.getLeadCandidate());
+voteRound.findWinner();
