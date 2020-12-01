@@ -210,7 +210,7 @@ console.log(votelist.countVotes());
 const voteRound = new VoteRound(votelist.countVotes());
 
 console.log(voteRound.round);
-console.log(voteRound.getLeadCandidate());
+console.log("The lead candidate is " + voteRound.getLeadCandidate());
 voteRound.findWinner();
 
-console.log(voteRound.findEliminate());
+console.log("The candidate(s) for elimination: " + voteRound.findEliminate());
