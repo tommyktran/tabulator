@@ -40,17 +40,53 @@ class Vote {
 class VoteRound {
     constructor(countObj) {
         this.round = countObj;
-        this.pastRound = {};
+        this.pastRounds = [];
     }
 
     findWinner() {
+        console.log(this.round);
         if (typeof this.getLeadCandidate() == "string" && this.isLeadMajorityVote()) {
             console.log("The winner is " + this.getLeadCandidate());
         } else if (typeof this.getLeadCandidate() == "object"){
-            console.log("Tied vote.");
+            console.log("Tied vote. Looking at the previous rounds...");
+            if (typeof this.findTieElimination(this.getLeadCandidate()) == "object") {
+                let winner = this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(this.findTieElimination(this.getLeadCandidate())), 1);
+                console.log("The winner is " + winner);
+            } else {
+                console.log("A winner could not be determined by looking at the previous rounds.");
+                console.log("The tied candidates are " + this.getLeadCandidate());
+            }
+            
         } else {
             votelist.eliminate(this.findEliminate());
             this.newRound(votelist.countVotes());
+        }
+    }
+
+    findTieElimination(tiedCandidatesArray) {
+        let done = false;
+        let didLoopChangeArray = false;
+        let previousRoundTicker = this.pastRounds.length-1;
+        while (!(done)) {
+            didLoopChangeArray = false;
+            if (tiedCandidatesArray.length > 1) {
+                if (this.pastRounds[previousRoundTicker][tiedCandidatesArray[0]] < this.pastRounds[previousRoundTicker][tiedCandidatesArray[0+1]]) {
+                    tiedCandidatesArray.pop();
+                    didLoopChangeArray = true;
+                } else if (this.pastRounds[previousRoundTicker][tiedCandidatesArray[0]] > this.pastRounds[previousRoundTicker][tiedCandidatesArray[0+1]]) {
+                    tiedCandidatesArray.splice(0,1);
+                    didLoopChangeArray = true;
+                }
+            }
+            if (didLoopChangeArray == false) {
+                done = true;
+            }
+            
+        }
+        if (tiedCandidatesArray.length == 1) {
+            return tiedCandidatesArray;
+        } else {
+            return;
         }
     }
 
@@ -91,8 +127,9 @@ class VoteRound {
     }
 
     newRound(array) {
-        this.pastRound = this.round;
+        this.pastRounds.push(this.round);
         this.round = array;
+        this.findWinner();
     }
 
     findEliminate() {
@@ -107,7 +144,11 @@ class VoteRound {
                 result.push(x)
             }
         }
-        return result;
+        if (result.length != 1) {
+            return this.findTieElimination(result)
+        } else {
+            return result;
+        }
     }
 }
 
@@ -231,20 +272,14 @@ Object.size = function(obj) {
     return size;
 };
 
-CSV = convertCSVtoVotes("Mayor2.csv");
+CSV = convertCSVtoVotes("Mayor.csv");
 
 const votelist = new VoteList();
 for (x in CSV) {
     votelist.list[x] = new Vote(CSV[x]);
 }
-console.log(votelist.countVotes());
 const voteRound = new VoteRound(votelist.countVotes());
 
 console.log(voteRound.round);
 console.log("The lead candidate is " + voteRound.getLeadCandidate());
 voteRound.findWinner();
-
-console.log("The candidate(s) for elimination: " + voteRound.findEliminate());
-
-console.log(voteRound.isLeadMajorityVote());
-console.log(voteRound.round);
