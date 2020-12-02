@@ -44,12 +44,37 @@ class VoteRound {
     }
 
     findWinner() {
-        if (typeof this.getLeadCandidate() == "string") {
+        if (typeof this.getLeadCandidate() == "string" && this.isLeadMajorityVote()) {
             console.log("The winner is " + this.getLeadCandidate());
+        } else if (typeof this.getLeadCandidate() == "object"){
+            console.log("Tied vote.");
+        } else {
+            votelist.eliminate(this.findEliminate());
+            this.newRound(votelist.countVotes());
+        }
+    }
+
+    isLeadMajorityVote() {
+        if (typeof this.getLeadCandidate() == "object" || typeof this.round !== "object") {
+            return false;
+        }
+        let leadVoteAmount = this.round[this.getLeadCandidate()];
+        let otherVoteAmount = 0;
+        for (x in this.round) {
+           otherVoteAmount += this.round[x];
+        }
+        otherVoteAmount -= leadVoteAmount;
+        if (leadVoteAmount > otherVoteAmount) {
+            return true;
+        } else {
+            return false;
         }
     }
 
     getLeadCandidate() {
+        if (typeof this.round !== 'object') {
+            return;
+        }
         let arr = Object.values(this.round);
         let max = Math.max(...arr);
         let result = [];
@@ -71,6 +96,9 @@ class VoteRound {
     }
 
     findEliminate() {
+        if (typeof this.round !== 'object') {
+            return;
+        }
         let arr = Object.values(this.round);
         let min = Math.min(...arr);
         let result = [];
@@ -95,6 +123,9 @@ class VoteList {
     }
     display() {
         console.log(this.list);
+    }
+    getList() {
+        return this.list;
     }
     countVotes() {
         let countObj = {};
@@ -200,7 +231,7 @@ Object.size = function(obj) {
     return size;
 };
 
-CSV = convertCSVtoVotes("Mayor.csv");
+CSV = convertCSVtoVotes("Mayor2.csv");
 
 const votelist = new VoteList();
 for (x in CSV) {
@@ -214,3 +245,6 @@ console.log("The lead candidate is " + voteRound.getLeadCandidate());
 voteRound.findWinner();
 
 console.log("The candidate(s) for elimination: " + voteRound.findEliminate());
+
+console.log(voteRound.isLeadMajorityVote());
+console.log(voteRound.round);
