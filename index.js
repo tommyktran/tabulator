@@ -1,7 +1,13 @@
 let nameSeparator = "]";
 let CSV = "";
 
+const { timeStamp } = require('console');
 const fs = require('fs');
+// const readline = require('readline');
+// const rl = readline.createInterface({
+//     input: process.stdin,
+//     output: process.stdout
+//   });
 
 class Vote {
     constructor(voteArray) {
@@ -44,7 +50,7 @@ class VoteRound {
     }
 
     findWinner() {
-        console.log(this.round);
+        this.printRound();
         if (typeof this.getLeadCandidate() == "string" && this.isLeadMajorityVote()) {
             console.log("The winner is " + this.getLeadCandidate());
         } else if (typeof this.getLeadCandidate() == "object"){
@@ -53,8 +59,8 @@ class VoteRound {
                 let winner = this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(this.findTieElimination(this.getLeadCandidate())), 1);
                 console.log("The winner is " + winner);
             } else {
-                console.log("A winner could not be determined by looking at the previous rounds.");
-                console.log("The tied candidates are " + this.getLeadCandidate());
+                // let winner = this.askTieElimination(this.getLeadCandidate())
+                console.log("The winner is ");
             }
             
         } else {
@@ -62,7 +68,28 @@ class VoteRound {
             this.newRound(votelist.countVotes());
         }
     }
-
+    printRound() {
+        console.log("Round " + (this.pastRounds.length + 1))
+        for (x in this.round) {
+            console.log(x + ": " + this.round[x])
+        }
+        console.log("");
+    }
+    // askTieElimination(tiedCandidatesArray) {
+    //     console.log("A number of candidates is tied and the tie cannot be broken:");
+    //     for (x in tiedCandidatesArray) {
+    //         console.log((x+1) + ".) " + tiedCandidatesArray[x]);
+    //     }
+    //     let result = "";
+    //     while (result == "") {
+    //         rl.question("Please enter the number of the candidate to move on to the next round.", (answer) => {
+    //             if (answer >= 1 && answer <= tiedCandidatesArray.length) {
+    //                 result = answer;
+    //             }
+    //         })
+    //     }
+    //     return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(result)), 1
+    // }
     findTieElimination(tiedCandidatesArray) {
         let done = false;
         let didLoopChangeArray = false;
@@ -158,6 +185,8 @@ class VoteList {
     }
 
     eliminate(name) {
+        console.log("Eliminating " + name)
+        console.log("");
         for (x of this.list) {
             x.eliminate(name);
         }
@@ -280,6 +309,4 @@ for (x in CSV) {
 }
 const voteRound = new VoteRound(votelist.countVotes());
 
-console.log(voteRound.round);
-console.log("The lead candidate is " + voteRound.getLeadCandidate());
 voteRound.findWinner();
