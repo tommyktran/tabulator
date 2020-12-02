@@ -2,7 +2,7 @@ let nameSeparator = "]";
 let CSV = "";
 
 const fs = require('fs');
-const prompt = require('prompt');
+const prompt = require('prompt-sync')();
 
 class Vote {
     constructor(voteArray) {
@@ -54,8 +54,13 @@ class VoteRound {
                 let winner = this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(this.findTieElimination(this.getLeadCandidate())), 1);
                 console.log("The winner is " + winner);
             } else {
-                this.askTieElimination(this.getLeadCandidate())
-                console.log("The winner is ");
+                if (typeof this.askTieElimination(this.getLeadCandidate()) != 'undefined') {
+                    this.askTieElimination(this.getLeadCandidate())
+                    console.log("The winner is ");
+                } else {
+                    return;
+                }
+                
             }
             
         } else {
@@ -75,15 +80,19 @@ class VoteRound {
         for (x in tiedCandidatesArray) {
             console.log((parseInt(x)+1) + ".) " + tiedCandidatesArray[x]);
         }
-        let input = "";
-        prompt.start();
-        prompt.message = "";
-        prompt.get(['answer'], function(err, result) {
-            if (answer >= 1 && answer <= tiedCandidatesArray.length) {
-                input = result.answer;
+        let result = "";
+        while (result == "") {
+            let answer = prompt("Please enter the number of the candidate to move on to the next round.");
+            console.log("");
+            if (parseInt(answer) >= 1 && parseInt(answer) <= tiedCandidatesArray.length) {
+                result = answer;
+            } else {
+                console.log("Invalid input.")
             }
-        })
-        return;
+        }
+        console.log(tiedCandidatesArray.splice(parseInt(result)-1, 1)[0])
+        console.log(result)
+        return tiedCandidatesArray.splice(parseInt(result)-1, 1)[0]
         // return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(input), 1)
         // const rl = readline.createInterface({
         //     input: process.stdin,
@@ -120,7 +129,7 @@ class VoteRound {
         if (tiedCandidatesArray.length == 1) {
             return tiedCandidatesArray;
         } else {
-            this.askTieElimination(tiedCandidatesArray);
+            return this.askTieElimination(tiedCandidatesArray);
         }
     }
 
@@ -179,7 +188,7 @@ class VoteRound {
             }
         }
         if (result.length != 1) {
-            this.findTieElimination(result)
+            return this.findTieElimination(result)
         } else {
             return result;
         }
@@ -308,7 +317,7 @@ Object.size = function(obj) {
     return size;
 };
 
-CSV = convertCSVtoVotes("Mayor2.csv");
+CSV = convertCSVtoVotes("Mayor.csv");
 
 const votelist = new VoteList();
 for (x in CSV) {
