@@ -1,13 +1,8 @@
 let nameSeparator = "]";
 let CSV = "";
 
-const { timeStamp } = require('console');
 const fs = require('fs');
-// const readline = require('readline');
-// const rl = readline.createInterface({
-//     input: process.stdin,
-//     output: process.stdout
-//   });
+const prompt = require('prompt');
 
 class Vote {
     constructor(voteArray) {
@@ -59,7 +54,7 @@ class VoteRound {
                 let winner = this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(this.findTieElimination(this.getLeadCandidate())), 1);
                 console.log("The winner is " + winner);
             } else {
-                // let winner = this.askTieElimination(this.getLeadCandidate())
+                this.askTieElimination(this.getLeadCandidate())
                 console.log("The winner is ");
             }
             
@@ -75,21 +70,33 @@ class VoteRound {
         }
         console.log("");
     }
-    // askTieElimination(tiedCandidatesArray) {
-    //     console.log("A number of candidates is tied and the tie cannot be broken:");
-    //     for (x in tiedCandidatesArray) {
-    //         console.log((x+1) + ".) " + tiedCandidatesArray[x]);
-    //     }
-    //     let result = "";
-    //     while (result == "") {
-    //         rl.question("Please enter the number of the candidate to move on to the next round.", (answer) => {
-    //             if (answer >= 1 && answer <= tiedCandidatesArray.length) {
-    //                 result = answer;
-    //             }
-    //         })
-    //     }
-    //     return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(result)), 1
-    // }
+    askTieElimination(tiedCandidatesArray) {
+        console.log("A number of candidates is tied and the tie cannot be broken:");
+        for (x in tiedCandidatesArray) {
+            console.log((parseInt(x)+1) + ".) " + tiedCandidatesArray[x]);
+        }
+        let input = "";
+        prompt.start();
+        prompt.message = "";
+        prompt.get(['answer'], function(err, result) {
+            if (answer >= 1 && answer <= tiedCandidatesArray.length) {
+                input = result.answer;
+            }
+        })
+        return;
+        // return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(input), 1)
+        // const rl = readline.createInterface({
+        //     input: process.stdin,
+        //     output: process.stdout
+        // });
+        // rl.question("Please enter the number of the candidate to move on to the next round.", (answer) => {
+        //     if (answer >= 1 && answer <= tiedCandidatesArray.length) {
+        //         result = answer;
+        //     }
+        //     rl.close();
+        // })
+        // return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(result), 1)
+    }
     findTieElimination(tiedCandidatesArray) {
         let done = false;
         let didLoopChangeArray = false;
@@ -113,7 +120,7 @@ class VoteRound {
         if (tiedCandidatesArray.length == 1) {
             return tiedCandidatesArray;
         } else {
-            return;
+            this.askTieElimination(tiedCandidatesArray);
         }
     }
 
@@ -172,7 +179,7 @@ class VoteRound {
             }
         }
         if (result.length != 1) {
-            return this.findTieElimination(result)
+            this.findTieElimination(result)
         } else {
             return result;
         }
@@ -301,7 +308,7 @@ Object.size = function(obj) {
     return size;
 };
 
-CSV = convertCSVtoVotes("Mayor.csv");
+CSV = convertCSVtoVotes("Mayor2.csv");
 
 const votelist = new VoteList();
 for (x in CSV) {
