@@ -82,7 +82,7 @@ class VoteRound {
         }
         let result = "";
         while (result == "") {
-            let answer = prompt("Please enter the number of the candidate to move on to the next round.");
+            let answer = prompt("Please enter the number of the candidate to move on to the next round: ");
             console.log("");
             if (parseInt(answer) >= 1 && parseInt(answer) <= tiedCandidatesArray.length) {
                 result = answer;
@@ -90,21 +90,8 @@ class VoteRound {
                 console.log("Invalid input.")
             }
         }
-        console.log(tiedCandidatesArray.splice(parseInt(result)-1, 1)[0])
-        console.log(result)
-        return tiedCandidatesArray.splice(parseInt(result)-1, 1)[0]
-        // return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(input), 1)
-        // const rl = readline.createInterface({
-        //     input: process.stdin,
-        //     output: process.stdout
-        // });
-        // rl.question("Please enter the number of the candidate to move on to the next round.", (answer) => {
-        //     if (answer >= 1 && answer <= tiedCandidatesArray.length) {
-        //         result = answer;
-        //     }
-        //     rl.close();
-        // })
-        // return this.getLeadCandidate().splice(this.getLeadCandidate().indexOf(result), 1)
+        tiedCandidatesArray.splice(parseInt(result)-1, 1)[0];
+        return tiedCandidatesArray;
     }
     findTieElimination(tiedCandidatesArray) {
         let done = false;
@@ -317,7 +304,7 @@ Object.size = function(obj) {
     return size;
 };
 
-CSV = convertCSVtoVotes("Mayor.csv");
+CSV = convertCSVtoVotes("Mayor2.csv");
 
 const votelist = new VoteList();
 for (x in CSV) {
