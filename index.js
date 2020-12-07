@@ -43,7 +43,24 @@ class VoteRound {
         this.round = countObj;
         this.pastRounds = [];
     }
-
+    roundTiebreak(tiedCandidatesArray, round) {
+        //takes a round and a list of tied candidates and returns new list of candidates
+        round = {B:3, C:4}
+        for (x in round) {
+            if (!(tiedCandidatesArray.includes(x))) {
+                delete round[x];
+            }
+        }
+        let arr = Object.values(round);
+        let min = Math.min(...arr);
+        let result = [];
+        for (x in round) {
+            if (round[x] === min && tiedCandidatesArray.includes(x)) {
+                result.push(x)
+            }
+        }
+        return result;
+    }
     findWinner() {
         this.printRound();
         if (typeof this.getLeadCandidate() == "string" && this.isLeadMajorityVote()) {
@@ -75,6 +92,7 @@ class VoteRound {
         }
         console.log("");
     }
+
     askTieElimination(tiedCandidatesArray) {
         console.log("A number of candidates is tied and the tie cannot be broken:");
         for (x in tiedCandidatesArray) {
@@ -312,4 +330,5 @@ for (x in CSV) {
 }
 const voteRound = new VoteRound(votelist.countVotes());
 
-voteRound.findWinner();
+// voteRound.findWinner();
+console.log(voteRound.roundTiebreak(["B", "C"], voteRound.round))
