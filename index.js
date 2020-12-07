@@ -45,7 +45,7 @@ class VoteRound {
     }
     roundTiebreak(tiedCandidatesArray, round) {
         //takes a round and a list of tied candidates and returns new list of candidates
-        round = {B:3, C:4}
+        round = {B:3, C:4, D:0}
         for (x in round) {
             if (!(tiedCandidatesArray.includes(x))) {
                 delete round[x];
@@ -112,6 +112,7 @@ class VoteRound {
         return tiedCandidatesArray;
     }
     findTieElimination(tiedCandidatesArray) {
+        /*
         let done = false;
         let didLoopChangeArray = false;
         let previousRoundTicker = this.pastRounds.length-1;
@@ -136,6 +137,15 @@ class VoteRound {
         } else {
             return this.askTieElimination(tiedCandidatesArray);
         }
+        */
+       for (let x = this.pastRounds.length; x > 0; x--) {
+           if (tiedCandidatesArray.length == 1) {
+               x = 0;
+               break;
+           } 
+           tiedCandidatesArray = this.roundTiebreak(tiedCandidatesArray, this.pastRounds[x]);
+       }
+       return tiedCandidatesArray;
     }
 
     isLeadMajorityVote() {
@@ -330,5 +340,5 @@ for (x in CSV) {
 }
 const voteRound = new VoteRound(votelist.countVotes());
 
-// voteRound.findWinner();
-console.log(voteRound.roundTiebreak(["B", "C"], voteRound.round))
+voteRound.findWinner();
+// console.log(voteRound.roundTiebreak(["B", "C"], voteRound.round))
